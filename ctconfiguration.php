@@ -12,16 +12,17 @@ class CTConfiguration extends Module
      */
     public function __construct()
     {
-        $this->name    = 'ctconfiguration';
-        $this->tab     = 'front_office_features';
-        $this->version = '1.0.0';
-        $this->author  = 'PrestaShop Community';
+        $this->name = 'ctconfiguration';
+        $this->tab = 'front_office_features';
+        $this->version = '1.0.1';
+        $this->author = 'thirty bees community';
 
         parent::__construct();
 
         $this->displayName = $this->l('Community Theme Configuration');
         $this->description = $this->l('Configuration for community theme blocks and content.');
-        $this->ps_versions_compliancy = array('min' => '1.6.0.3', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = ['min' => '1.6.0.3', 'max' => _PS_VERSION_];
+        $this->tb_versions_compliancy = '~1.0.1';
 
         $this->bootstrap = true;
     }
@@ -35,14 +36,14 @@ class CTConfiguration extends Module
     {
         parent::install();
 
-        $hooksToUnhook = array(
-            array('module' => 'blockcategories', 'hook' => 'footer',)
-        );
+        $hooksToUnhook = [
+            ['module' => 'blockcategories', 'hook' => 'footer',],
+        ];
         foreach ($hooksToUnhook as $unhook) {
             $this->unhookModule($unhook['module'], $unhook['hook']);
         }
 
-        $hooksToInstall = array('displayHeader', 'displayFooterProduct');
+        $hooksToInstall = ['displayHeader', 'displayFooterProduct'];
         foreach ($hooksToInstall as $hookName) {
             $this->registerHook($hookName);
         }
@@ -52,46 +53,16 @@ class CTConfiguration extends Module
 
         // Translatable configuration items
         foreach (Language::getLanguages(false) as $language) {
-            $id_language = (int)$language['id_lang'];
+            $idLanguage = (int) $language['id_lang'];
 
-            Configuration::updateValue('CT_CFG_COPYRIGHT_CONTENT', array(
-                $id_language => '&copy; Acme Corporation 2016'
-            ));
+            Configuration::updateValue(
+                'CT_CFG_COPYRIGHT_CONTENT', [
+                    $idLanguage => '&copy; Acme Corporation 2016',
+                ]
+            );
         }
 
         return true;
-    }
-
-    /***
-     * Uninstalls module from PrestaShop
-     *
-     * @return bool
-     */
-    public function uninstall()
-    {
-        $keysToDrop = array(
-            'CT_CFG_BLOCKCATEGORIES_FOOTER',
-            'CT_CFG_COPYRIGHT_CONTENT',
-        );
-        foreach ($keysToDrop as $key) {
-            Configuration::deleteByName($key);
-        }
-
-        return parent::uninstall();
-    }
-
-    /**
-     * Registers a module hook
-     *
-     * @param string $module
-     * @param string $hook
-     *
-     * @return bool
-     */
-    protected function hookModule($module, $hook)
-    {
-        $module = Module::getInstanceByName($module);
-        return $module->registerHook($hook);
     }
 
     /**
@@ -105,9 +76,27 @@ class CTConfiguration extends Module
     protected function unhookModule($module, $hook)
     {
         $id_module = Module::getModuleIdByName($module);
-        $id_hook   = Hook::getIdByName($hook);
+        $id_hook = Hook::getIdByName($hook);
 
-        return Db::getInstance()->delete('hook_module', 'id_module = '.(int)$id_module.' AND id_hook = '.(int)$id_hook);
+        return Db::getInstance()->delete('hook_module', 'id_module = '.(int) $id_module.' AND id_hook = '.(int) $id_hook);
+    }
+
+    /***
+     * Uninstalls module from PrestaShop
+     *
+     * @return bool
+     */
+    public function uninstall()
+    {
+        $keysToDrop = [
+            'CT_CFG_BLOCKCATEGORIES_FOOTER',
+            'CT_CFG_COPYRIGHT_CONTENT',
+        ];
+        foreach ($keysToDrop as $key) {
+            Configuration::deleteByName($key);
+        }
+
+        return parent::uninstall();
     }
 
     /**
@@ -123,23 +112,23 @@ class CTConfiguration extends Module
 
         $moduleUrl = $this->context->link->getAdminLink('AdminModules').'&configure='.$this->name;
 
-        $fieldSets = array(
-            'general' => array(
-                'title'  => $this->l('Module settings'),
-                'fields' => $this->getOptionFields(),
-                'buttons' => array(
-                    'cancelBlock' => array(
+        $fieldSets = [
+            'general' => [
+                'title'   => $this->l('Module settings'),
+                'fields'  => $this->getOptionFields(),
+                'buttons' => [
+                    'cancelBlock' => [
                         'title' => $this->l('Cancel'),
                         'href'  => $moduleUrl,
-                        'icon'  => 'process-icon-cancel'
-                    ),
-                ),
-                'submit' => array(
+                        'icon'  => 'process-icon-cancel',
+                    ],
+                ],
+                'submit'  => [
                     'name'  => 'submit'.$this->name,
                     'title' => $this->l('Save'),
-                ),
-            )
-        );
+                ],
+            ],
+        ];
 
         $h = new HelperOptions();
         $h->token = Tools::getAdminTokenLite('AdminModules');
@@ -150,59 +139,31 @@ class CTConfiguration extends Module
     }
 
     /**
-     * Return HelperOptions fields that are using in module configuration form.
-     *
-     * @return array
-     */
-    protected function getOptionFields()
-    {
-        return array(
-            'CT_CFG_BLOCKCATEGORIES_FOOTER' => array(
-                'title' => $this->l('Show blockcategories footer block'),
-                'desc'  => $this->l('If enabled, shows category tree block in the footer.'),
-                'cast'  => 'boolval',
-                'type'  => 'bool',
-            ),
-            'CT_CFG_COPYRIGHT_CONTENT' => array(
-                'title' => $this->l('Copyright footer text'),
-                'desc'  => $this->l('Text to be displayed in the copyright footer block.')
-                    .' '.$this->l('Leave empty to not displayed the block.'),
-                'hint'  => $this->l('HTML is allowed. Enter &amp;copy; for copyright symbol.'),
-                'cast'  => 'strval',
-                'type'  => 'textareaLang',
-                'html'  => true,
-                'size'  => 50,
-            ),
-        );
-    }
-
-    /**
      * Processes submitted configuration variables
      */
     protected function postProcess()
     {
         // @TODO Nicer solution ?
-        $castFunctions = array('boolval', 'doubleval', 'floatval', 'intval', 'strval');
+        $castFunctions = ['boolval', 'doubleval', 'floatval', 'intval', 'strval'];
         $langIds = Language::getIDs(false);
 
-        $values = array();
+        $values = [];
         foreach ($this->getOptionFields() as $key => $field) {
-
             $htmlAllowed = isset($field['html']) && $field['html'];
 
             if ($field['type'] == 'textareaLang' || $field['type'] == 'textLang') {
-                $values[$key] = array();
-                foreach ($langIds as $id_lang) {
-                    $value = Tools::getValue($key.'_'.$id_lang);
-                    if ($field['cast'] && in_array($field['cast'], $castFunctions)) {
+                $values[$key] = [];
+                foreach ($langIds as $idLang) {
+                    $value = Tools::getValue($key.'_'.$idLang);
+                    if (isset($field['cast']) && $field['cast'] && in_array($field['cast'], $castFunctions)) {
                         $value = call_user_func($field['cast'], $value);
                     }
 
-                    $values[$key][$id_lang] = $value;
+                    $values[$key][$idLang] = $value;
                 }
             } else {
                 $value = Tools::getValue($key);
-                if ($field['cast'] && in_array($field['cast'], $castFunctions)) {
+                if (isset($field['cast']) && $field['cast'] && in_array($field['cast'], $castFunctions)) {
                     $value = call_user_func($field['cast'], $value);
                 }
 
@@ -220,23 +181,66 @@ class CTConfiguration extends Module
     }
 
     /**
+     * Return HelperOptions fields that are using in module configuration form.
+     *
+     * @return array
+     */
+    protected function getOptionFields()
+    {
+        return [
+            'CT_CFG_BLOCKCATEGORIES_FOOTER' => [
+                'title' => $this->l('Show blockcategories footer block'),
+                'desc'  => $this->l('If enabled, shows category tree block in the footer.'),
+                'cast'  => 'boolval',
+                'type'  => 'bool',
+            ],
+            'CT_CFG_COPYRIGHT_CONTENT'      => [
+                'title' => $this->l('Copyright footer text'),
+                'desc'  => $this->l('Text to be displayed in the copyright footer block.').' '.$this->l('Leave empty to not displayed the block.'),
+                'hint'  => $this->l('HTML is allowed. Enter &amp;copy; for copyright symbol.'),
+                'cast'  => 'strval',
+                'type'  => 'textareaLang',
+                'html'  => true,
+                'size'  => 50,
+            ],
+        ];
+    }
+
+    /**
+     * Registers a module hook
+     *
+     * @param string $module
+     * @param string $hook
+     *
+     * @return bool
+     */
+    protected function hookModule($module, $hook)
+    {
+        $module = Module::getInstanceByName($module);
+
+        return $module->registerHook($hook);
+    }
+
+    /**
      * Adds assets to page header
      * and passes configuration variables to smarty
      */
     public function hookDisplayHeader()
     {
         // @TODO Cache configuration array with Cache::getInstance()?
-        $id_lang = (int)$this->context->language->id;
-        $this->context->smarty->assign(array(
-            'ctheme' => array(
-                'footer' => array(
-                    'copyright' => array(
-                        'display' => true,
-                        'html'    => Configuration::get('CT_CFG_COPYRIGHT_CONTENT', $id_lang),
-                    ),
-                ),
-            ),
-        ));
+        $idLang = (int) $this->context->language->id;
+        $this->context->smarty->assign(
+            [
+                'ctheme' => [
+                    'footer' => [
+                        'copyright' => [
+                            'display' => true,
+                            'html'    => Configuration::get('CT_CFG_COPYRIGHT_CONTENT', $idLang),
+                        ],
+                    ],
+                ],
+            ]
+        );
     }
 
     /**
