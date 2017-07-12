@@ -14,7 +14,7 @@ class CTConfiguration extends Module
     {
         $this->name = 'ctconfiguration';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.1';
+        $this->version = '1.0.2';
         $this->author = 'thirty bees community';
 
         parent::__construct();
@@ -37,7 +37,7 @@ class CTConfiguration extends Module
         parent::install();
 
         $hooksToUnhook = [
-            ['module' => 'blockcategories', 'hook' => 'footer',],
+            ['module' => 'blockcategories', 'hook' => 'footer'],
         ];
         foreach ($hooksToUnhook as $unhook) {
             $this->unhookModule($unhook['module'], $unhook['hook']);
@@ -56,8 +56,9 @@ class CTConfiguration extends Module
             $idLanguage = (int) $language['id_lang'];
 
             Configuration::updateValue(
-                'CT_CFG_COPYRIGHT_CONTENT', [
-                    $idLanguage => '&copy; Acme Corporation 2016',
+                'CT_CFG_COPYRIGHT_CONTENT',
+                [
+                    $idLanguage => '&copy; Acme Corporation 2017',
                 ]
             );
         }
