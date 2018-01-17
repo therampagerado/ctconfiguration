@@ -14,7 +14,7 @@ class CTConfiguration extends Module
     {
         $this->name = 'ctconfiguration';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.2';
+        $this->version = '1.0.3';
         $this->author = 'thirty bees community';
 
         parent::__construct();
@@ -258,7 +258,7 @@ class CTConfiguration extends Module
                     'footer' => [
                         'copyright' => [
                             'display' => true,
-                            'html'    => $copyrightContent,
+                            'html'    => $copyrightContent[$idLang],
                         ],
                     ],
                 ],
