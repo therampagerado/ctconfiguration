@@ -31,6 +31,8 @@ class CTConfiguration extends Module
      * Installs module to PrestaShop
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function install()
     {
@@ -73,6 +75,8 @@ class CTConfiguration extends Module
      * @param string $hook
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function unhookModule($module, $hook)
     {
@@ -86,6 +90,8 @@ class CTConfiguration extends Module
      * Uninstalls module from PrestaShop
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function uninstall()
     {
@@ -104,6 +110,11 @@ class CTConfiguration extends Module
      * Compiles and returns module configuration page content
      *
      * @return string
+     * @throws Exception
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function getContent()
     {
@@ -141,10 +152,12 @@ class CTConfiguration extends Module
 
     /**
      * Processes submitted configuration variables
+     *
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     protected function postProcess()
     {
-        // @TODO Nicer solution ?
         $castFunctions = ['boolval', 'doubleval', 'floatval', 'intval', 'strval'];
         $langIds = Language::getIDs(false);
 
@@ -214,6 +227,9 @@ class CTConfiguration extends Module
      * @param string $hook
      *
      * @return bool
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function hookModule($module, $hook)
     {
@@ -228,15 +244,23 @@ class CTConfiguration extends Module
      */
     public function hookDisplayHeader()
     {
-        // @TODO Cache configuration array with Cache::getInstance()?
         $idLang = (int) $this->context->language->id;
+        static $copyrightContent = [];
+        if (!isset($copyrightContent[$idLang])) {
+            try {
+                $copyrightContent[$idLang] = Configuration::get('CT_CFG_COPYRIGHT_CONTENT', $idLang);
+            } catch (PrestaShopException $e) {
+                $copyrightContent[$idLang] = '';
+            }
+        }
+
         $this->context->smarty->assign(
             [
                 'ctheme' => [
                     'footer' => [
                         'copyright' => [
                             'display' => true,
-                            'html'    => Configuration::get('CT_CFG_COPYRIGHT_CONTENT', $idLang),
+                            'html'    => $copyrightContent,
                         ],
                     ],
                 ],
@@ -249,7 +273,13 @@ class CTConfiguration extends Module
      */
     public function hookDisplayFooterProduct()
     {
-        if (Configuration::get('PS_DISPLAY_JQZOOM') == 1) {
+        try {
+            $jqZoom = (bool) Configuration::get('PS_DISPLAY_JQZOOM');
+        } catch (PrestaShopException $e) {
+            $jqZoom = false;
+        }
+
+        if ($jqZoom) {
             // Remove jQuery Zoom
             $jqZoomPluginPath = Media::getJqueryPluginPath('jqzoom');
             $this->context->controller->removeJS($jqZoomPluginPath['js']);
