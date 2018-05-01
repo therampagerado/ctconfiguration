@@ -58,7 +58,7 @@ class CTConfiguration extends Module
             Configuration::updateValue(
                 'CT_CFG_COPYRIGHT_CONTENT',
                 [
-                    $idLanguage => '&copy; Acme Corporation 2017',
+                    $idLanguage => '&copy; Acme Corporation 2018',
                 ]
             );
         }
