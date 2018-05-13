@@ -208,7 +208,7 @@ class CTConfiguration extends Module
             ],
             'CT_CFG_COPYRIGHT_CONTENT'      => [
                 'title' => $this->l('Copyright footer text'),
-                'desc'  => $this->l('Text to be displayed in the copyright footer block.').' '.$this->l('Leave empty to not displayed the block.'),
+                'desc'  => $this->l('Text to be displayed in the copyright footer block.').' '.$this->l('Leave empty to not display the block.'),
                 'hint'  => $this->l('HTML is allowed. Enter &amp;copy; for copyright symbol.'),
                 'cast'  => 'strval',
                 'type'  => 'textareaLang',
