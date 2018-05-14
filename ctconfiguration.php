@@ -15,7 +15,7 @@ class CTConfiguration extends Module
         $this->name = 'ctconfiguration';
         $this->tab = 'front_office_features';
         $this->version = '1.0.3';
-        $this->author = 'thirty bees community';
+        $this->author = 'thirty bees';
 
         parent::__construct();
 
