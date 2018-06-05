@@ -33,11 +33,13 @@ class CTConfiguration extends Module
         $this->tab = 'front_office_features';
         $this->version = '1.0.3';
         $this->author = 'thirty bees';
+        $this->need_instance = 0;
 
         parent::__construct();
 
         $this->displayName = $this->l('Community Theme Configuration');
         $this->description = $this->l('Configuration for community theme blocks and content.');
+        $this->tb_versions_compliancy = '> 1.0.0';
 
         $this->bootstrap = true;
     }
