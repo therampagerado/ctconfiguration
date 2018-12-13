@@ -6,6 +6,7 @@ tags:
   - configuration
   - theme configuration
   - footer
+  - ctconfiguration
 description_short: Configuration for community theme blocks and content.
 description: description.md
 images:
