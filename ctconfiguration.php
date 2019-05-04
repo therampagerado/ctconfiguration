@@ -40,6 +40,7 @@ class CTConfiguration extends Module
         $this->displayName = $this->l('Community Theme Configuration');
         $this->description = $this->l('Configuration for community theme blocks and content.');
         $this->tb_versions_compliancy = '> 1.0.0';
+        $this->tb_min_version = '1.0.0';
 
         $this->bootstrap = true;
     }
