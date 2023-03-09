@@ -26,6 +26,9 @@ class CTConfiguration extends Module
 {
     /**
      * CTConfiguration constructor.
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -128,8 +131,6 @@ class CTConfiguration extends Module
      * Compiles and returns module configuration page content
      *
      * @return string
-     * @throws Exception
-     * @throws HTMLPurifier_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
@@ -172,7 +173,6 @@ class CTConfiguration extends Module
      * Processes submitted configuration variables
      *
      * @throws PrestaShopException
-     * @throws Adapter_Exception
      */
     protected function postProcess()
     {
@@ -245,7 +245,6 @@ class CTConfiguration extends Module
      * @param string $hook
      *
      * @return bool
-     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
