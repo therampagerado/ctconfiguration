@@ -32,7 +32,7 @@ class CTConfiguration extends Module
     {
         $this->name = 'ctconfiguration';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.5';
+        $this->version = '1.0.6';
         $this->author = 'thirty bees';
         $this->need_instance = 0;
 
