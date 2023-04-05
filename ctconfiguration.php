@@ -19,8 +19,6 @@
 
 /**
  * Class CTConfiguration
- *
- * @property $bootstrap
  */
 class CTConfiguration extends Module
 {
@@ -75,16 +73,13 @@ class CTConfiguration extends Module
         Configuration::updateValue('PS_SCENE_FEATURE_ACTIVE', false);
 
         // Translatable configuration items
+        $copyrightValue = '&copy; ' . Configuration::get(Configuration::SHOP_NAME) . ' ' . date('Y');
+        $copyrightValues = [];
         foreach (Language::getLanguages(false) as $language) {
             $idLanguage = (int) $language['id_lang'];
-
-            Configuration::updateValue(
-                'CT_CFG_COPYRIGHT_CONTENT',
-                [
-                    $idLanguage => '&copy; Acme Corporation 2018',
-                ]
-            );
+            $copyrightValues[$idLanguage] = $copyrightValue;
         }
+        Configuration::updateValue('CT_CFG_COPYRIGHT_CONTENT', $copyrightValues);
 
         return true;
     }
@@ -258,26 +253,20 @@ class CTConfiguration extends Module
     /**
      * Adds assets to page header
      * and passes configuration variables to smarty
+     *
+     * @throws PrestaShopException
      */
     public function hookDisplayHeader()
     {
         $idLang = (int) $this->context->language->id;
-        static $copyrightContent = [];
-        if (!isset($copyrightContent[$idLang])) {
-            try {
-                $copyrightContent[$idLang] = Configuration::get('CT_CFG_COPYRIGHT_CONTENT', $idLang);
-            } catch (PrestaShopException $e) {
-                $copyrightContent[$idLang] = '';
-            }
-        }
-
+        $copyrigthContent = Configuration::get('CT_CFG_COPYRIGHT_CONTENT', $idLang);
         $this->context->smarty->assign(
             [
                 'ctheme' => [
                     'footer' => [
                         'copyright' => [
-                            'display' => true,
-                            'html'    => $copyrightContent[$idLang],
+                            'display' => !!$copyrigthContent,
+                            'html'    => $copyrigthContent,
                         ],
                     ],
                 ],
